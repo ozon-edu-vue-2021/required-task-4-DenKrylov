@@ -17,20 +17,25 @@ export default {
 
 <style>
 #app {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   font-family: Avenir, Helvetica, Arial, sans-serif;
-  color: #2c3e50;
-  background-color: #fafafa;
-  padding: 24px;
+  color: rgb(255, 255, 255);
   box-sizing: border-box;
 }
-
-html,
-body,
-#app {
-  height: 100%;
-}
-
 * {
   box-sizing: border-box;
 }
+*::selection {
+  background: rgb(111, 119, 135);
+  color: rgb(28, 30, 33);
+}
+body {
+  display: flex;
+  justify-content: center;
+  height: 100%;
+  background: rgb(52, 56, 61);
+}
+
 </style>
