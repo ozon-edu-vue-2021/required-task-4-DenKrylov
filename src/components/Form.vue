@@ -1,32 +1,32 @@
 <template>
   <div class="form">
     <div class="row">
-        {{ formData }}
     </div>
     <div class="personalData">
       <h2>Личные данные</h2>
       <div class="row">
-        <label>
+        <label v-bind:class="{ error: !formCheck.lastName }">
           Фамилия
+          {{ formCheck.lastName }}
           <input class="input-text" type="text" v-model="formData.lastName" />
         </label>
-        <label>
+        <label v-bind:class="{ error: !formCheck.firstName }" >
           Имя
           <input class="input-text" type="text" v-model="formData.firstName" />
         </label>
-        <label>
+        <label v-bind:class="{ error: !formCheck.patronymic }">
           Отчество
           <input class="input-text" type="text" v-model="formData.patronymic" />
         </label>
       </div>
       <div class="row">
-        <label>
+        <label v-bind:class="{ error: !formCheck.dateOfBirth }">
           Дата рождения
           <input class="input-text" type="date" v-model="formData.dateOfBirth" />
         </label>
       </div>
       <div class="row">
-        <label>
+        <label v-bind:class="{ error: !formCheck.email }">
           E-mail
           <input class="input-text" type="email" v-model="formData.email" />
         </label>
@@ -76,31 +76,31 @@
       </div>
       <div
         class="row"
-        v-if="formData.citizenship == 'Russia'"
+        v-if="formData.citizenship === 'Russia'"
       >
-        <label>
+        <label  v-bind:class="{ error: !formCheck.series }">
           Серия паспорта
           <input class="input-text" type="text" v-model="formData.series" />
         </label>
-        <label>
+        <label  v-bind:class="{ error: !formCheck.number }">
           Номер паспота
           <input class="input-text" type="text" v-model="formData.number" />
         </label>
-        <label>
+        <label v-bind:class="{ error: !formCheck.dateOfIssue }">
           Дата выдачи
           <input class="input-text" type="date" v-model="formData.dateOfIssue" />
         </label>
       </div>
       <div
         class="row"
-        v-else
+        v-else-if="formData.citizenship !== 'Russia' && formData.citizenship.length !== 0"
       >
         <div class="row">
-          <label>
+          <label v-bind:class="{ error: !formCheck.lastNameLat }">
             Фамилия на латинице
             <input class="input-text" type="text" v-model="formData.lastNameLat" />
           </label>
-          <label>
+          <label  v-bind:class="{ error: !formCheck.firstNameLat }">
             Имя на латинице
             <input class="input-text" type="text" v-model="formData.firstNameLat" />
           </label>
@@ -159,10 +159,12 @@
         class="row"
         v-if="formData.changeId == 1"
       >
-        <label>Фамилия
+        <label v-bind:class="{ error: !formCheck.originLastName }">
+          Предыдущая Фамилия
           <input class="input-text" type="text" v-model="formData.originLastName" />
         </label>
-        <label>Имя
+        <label v-bind:class="{ error: !formCheck.originFirstName }">
+          Предыдущее Имя
           <input class="input-text" type="text" v-model="formData.originFirstName" />
         </label>
       </div>
@@ -201,12 +203,84 @@ export default {
         firstNameLat: "",
         countryOfExpiration: "",
       },
+      formCheck: {
+        lastName: true,
+        firstName: true,
+        patronymic: true,
+        dateOfBirth: true,
+        email: true,
+        series: true,
+        number: true,
+        lastNameLat: true,
+        firstNameLat: true,
+        dateOfIssue: true,
+        originLastName: true,
+        originFirstName: true,
+      },
       isDropdownOpenContry: false,
       isDropdownOpenExpiration: false,
       allCitizens: citizenships,
     };
   },
   methods: {
+    check() {
+      this.formCheck.lastName = this.checkRu(this.formData.lastName);
+      this.formCheck.firstName = this.checkRu(this.formData.firstName);
+      this.formCheck.patronymic = this.checkRu(this.formData.patronymic);
+      this.formCheck.dateOfBirth = this.checkDate(this.formData.dateOfBirth);
+      this.formCheck.email = this.checkEmail(this.formData.email);
+      if(this.formData.citizenship == "russia") {
+        this.formCheck.series = this.checkNum(4, this.formData.series);
+        this.formCheck.number = this.checkNum(6, this.formData.number);
+        this.formCheck.dateOfIssue = this.checkDate(this.formData.dateOfIssue);
+      } else if(this.formData.citizenship) {
+        this.formCheck.firstNameLat = this.checkLat(this.formData.firstNameLat);
+        this.formCheck.lastNameLat = this.checkLat(this.formData.lastNameLat);
+      }
+      if(this.formData.changeId == 1) {
+        this.formCheck.originLastName = this.checkRu(this.formData.originLastName);
+        this.formCheck.originFirstName = this.checkRu(this.formData.originFirstName);
+      }
+    },
+    checkRu(str) {
+      let re = /^[А-ЯЁа-яё]+$/;
+			return re.test(String(str).toLowerCase());
+    },
+    checkLat(str) {
+      if(this.formData.citizenship != "russia" &&
+        this.formData.citizenship) {
+        let re = /^[A-Za-z]+$/;
+        return re.test(String(str).toLowerCase());
+      }
+      return true;
+    },
+    checkNum(num, str) {
+      if(num == str.length) {
+        let re = /^\d+$/;
+        return re.test(Number(str));
+      }
+      return false;
+    },
+    checkDate(str) {
+      if(str.length != 0) {
+        let d = new Date();
+        let year = d.getFullYear();
+        let month = d.getMonth() + 1;
+        let day = d.getDate();
+        if(day < 10) {
+          day = "0" + day;
+        }
+        let date = year + "-" + month + "-" + day;
+        if(str <= date) {
+          return true;
+        }
+      }
+      return false;
+    },
+    checkEmail(str) {
+      let re = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
+			return re.test(String(str).toLowerCase());
+    },
     hideDropdown(num) {
       if(num == 1) {
         this.isDropdownOpenContry = false;
@@ -223,6 +297,14 @@ export default {
       this.hideDropdown(num);
     },
     formSubmit() {
+      this.check();
+      for(let k in this.formCheck) {
+        console.log(k, this.formCheck[k]);
+        if(this.formCheck[k] == false) {
+          console.warn("the form cannot be sent to server");
+          return;
+        }
+      }
       console.log("update", this.formData);
     }
   },
@@ -251,6 +333,14 @@ export default {
   border: none;
   border-radius: 3px;
   outline:none;
+}
+.error {
+  color: rgb(170, 2, 30);
+}
+
+.error .input-text {
+  border: 1px solid rgb(170, 2, 30);
+  color: rgb(170, 2, 30);
 }
 h2 {
   margin: 10px;
@@ -294,12 +384,3 @@ label .input-text{
   justify-content: center;
 }
 </style>
-
-// if(phone) {
-// 			let re = /\+7\s\(\d{3}\)\s\d{3}-\d{2}-\d{2}/;
-// 			this.state.phone = re.test(phone);
-// 		}
-// 		if(email) {
-// 			let re = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
-// 			this.state.email = re.test(String(email).toLowerCase());
-// 		}
