@@ -7,7 +7,6 @@
       <div class="row">
         <label v-bind:class="{ error: !formCheck.lastName }">
           Фамилия
-          {{ formCheck.lastName }}
           <input class="input-text" type="text" v-model="formData.lastName" />
         </label>
         <label v-bind:class="{ error: !formCheck.firstName }" >
@@ -53,7 +52,7 @@
             class="input-text" type="text"
             v-model="searchWord"
             @focus="isDropdownOpenContry = true"
-            @keydown.enter="hideDropdown(1)"
+            @keydown.enter="hideDropdown()"
           />
           <div
             v-if="isDropdownOpenContry"
@@ -63,14 +62,14 @@
               v-if="allCitizens.length"
             >
               <li
-                v-for="country in allCitizens"
+                v-for="country in filterCitizens"
                 :key="country.id"
                 @click="onCountryClicked(1, country.nationality)"
               >
                 {{ country.nationality }}
               </li>
             </ul>
-              <div v-else>Отсутсвует соединение с сервером</div>
+              <div v-else>Список пуст</div>
           </div>
         </label>
       </div>
@@ -221,7 +220,7 @@ export default {
       isDropdownOpenContry: false,
       isDropdownOpenExpiration: false,
       allCitizens: citizenships,
-      filterCitizens: {},
+      filterCitizens: citizenships,
       searchWord: "",
       debouncedSearchCitizens: null,
     };
@@ -288,20 +287,23 @@ export default {
       let re = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
 			return re.test(String(str).toLowerCase());
     },
-    hideDropdown(num) {
-      if(num == 1) {
-        this.isDropdownOpenContry = false;
-      } else if(num == 2) {
-        this. isDropdownOpenExpiration = false;
-      }
+    hideDropdown() {
+      console.log("steep: 5");
+      this.isDropdownOpenContry = false;
+      // this.isDropdownOpenExpiration = false;
+      console.log("steep: 6");
     },
     onCountryClicked(num, selectedCountry) {
-      if(num == 1) {
-        this.formData.citizenship = selectedCountry;
-      } else if(num == 2) {
-        this.formData.countryOfExpiration = selectedCountry;
-      }
-      this.hideDropdown(num);
+      console.log("steep: 1");
+      this.searchWord = selectedCountry;
+      console.log("steep: 2");
+      this.hideDropdown();
+      console.log("steep: 3");
+      // if(num == 1) {
+      // } else if(num == 2) {
+      //   console.log("steep: 3");
+      //   this.formData.countryOfExpiration = selectedCountry;
+      // }
     },
     formSubmit() {
       this.check();
@@ -315,8 +317,9 @@ export default {
       console.log("update", this.formData);
     },
     getCitizens(searchWord) {
-      console.log("Getch citizens: ", searchWord);
-      // return this.allCitizens.filter(citizens => citizens.nationality == searchWord)
+      this.filterCitizens = this.allCitizens.filter((citi) => {
+        return citi.nationality.toLowerCase().includes(searchWord.toLowerCase());
+      });
     },
   },
   watch: {
@@ -353,7 +356,6 @@ export default {
 .error {
   color: rgb(170, 2, 30);
 }
-
 .error .input-text {
   border: 1px solid rgb(170, 2, 30);
   color: rgb(170, 2, 30);
@@ -382,12 +384,12 @@ label .input-text{
   cursor: pointer;
 }
 .list-country {
-  height: 400px;
+  overflow: auto;
+  max-height: 400px;
   background-color: rgb(28, 30, 33);
   border-radius: 3px;
   padding: 10px;
   text-overflow: ellipsis;
-  overflow: hidden;
 }
 .list-country li {
   height: 45px;
