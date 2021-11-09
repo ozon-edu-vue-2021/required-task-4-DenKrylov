@@ -51,7 +51,7 @@
           Гражданство
           <input 
             class="input-text" type="text"
-            v-model="formData.citizenship"
+            v-model="searchWord"
             @focus="isDropdownOpenContry = true"
             @keydown.enter="hideDropdown(1)"
           />
@@ -178,6 +178,7 @@
 <script>
 import ClickOutside from "vue-click-outside";
 import citizenships from "@/assets/data/citizenships.json";
+import { debounce } from "@/utils/debounce.js";
 
 export default {
   directives: {
@@ -220,7 +221,13 @@ export default {
       isDropdownOpenContry: false,
       isDropdownOpenExpiration: false,
       allCitizens: citizenships,
+      filterCitizens: {},
+      searchWord: "",
+      debouncedSearchCitizens: null,
     };
+  },
+  created() {
+    this.debouncedSearchCitizens = debounce(this.getCitizens, 2000);
   },
   methods: {
     check() {
@@ -306,8 +313,17 @@ export default {
         }
       }
       console.log("update", this.formData);
-    }
+    },
+    getCitizens(searchWord) {
+      console.log("Getch citizens: ", searchWord);
+      // return this.allCitizens.filter(citizens => citizens.nationality == searchWord)
+    },
   },
+  watch: {
+    searchWord(newValue) {
+      this.debouncedSearchCitizens(newValue);
+    }
+  }
 };
 </script>
 
