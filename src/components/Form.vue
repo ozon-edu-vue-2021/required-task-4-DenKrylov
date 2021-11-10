@@ -73,9 +73,10 @@
           </div>
         </label>
       </div>
+      город{{ formData.citizenship }}
       <div
         class="row"
-        v-if="formData.citizenship === 'Russia'"
+        v-if="formData.citizenship == 'russia'"
       >
         <label  v-bind:class="{ error: !formCheck.series }">
           Серия паспорта
@@ -91,8 +92,8 @@
         </label>
       </div>
       <div
-        class="row"
-        v-else-if="formData.citizenship !== 'Russia' && formData.citizenship.length !== 0"
+        class="column"
+        v-else-if="formData.citizenship !== 'russia' && formData.citizenship.length !== 0"
       >
         <div class="row">
           <label v-bind:class="{ error: !formCheck.lastNameLat }">
@@ -105,9 +106,9 @@
           </label>
         </div>
         <div class="row">
-          <label>
+          <label v-bind:class="{ error: !formCheck.numberLat }">
             Номер паспота
-            <input class="input-text" type="text" v-model="formData.number" />
+            <input class="input-text" type="text" v-model="formData.numberLat" />
           </label>
           <label>
             Страна выдачи
@@ -135,9 +136,9 @@
             <div v-else>Отсутсвует соединение с сервером</div>
           </div>
           </label>
-          <label>
+          <label v-bind:class="{ error: !formCheck.typePassport }">
             Тип паспорта
-            <input class="input-text" type="date" v-model="formData.dateOfIssue" />
+            <input class="input-text" type="input" v-model="formData.typePassport" />
           </label>
         </div>
       </div>
@@ -199,9 +200,11 @@ export default {
         changeId: -1,
         originLastName: "",
         originFirstName: "",
+        numberLat: "",
         lastNameLat: "",
         firstNameLat: "",
         countryOfExpiration: "",
+        typePassport: "",
       },
       formCheck: {
         lastName: true,
@@ -213,7 +216,9 @@ export default {
         number: true,
         lastNameLat: true,
         firstNameLat: true,
+        numberLat: true,
         dateOfIssue: true,
+        typePassport: true,
         originLastName: true,
         originFirstName: true,
       },
@@ -226,7 +231,7 @@ export default {
     };
   },
   created() {
-    this.debouncedSearchCitizens = debounce(this.getCitizens, 2000);
+    this.debouncedSearchCitizens = debounce(this.getCitizens, 1000);
   },
   methods: {
     check() {
@@ -242,10 +247,17 @@ export default {
       } else if(this.formData.citizenship) {
         this.formCheck.firstNameLat = this.checkLat(this.formData.firstNameLat);
         this.formCheck.lastNameLat = this.checkLat(this.formData.lastNameLat);
+        this.formCheck.numberLat = this.checkNum(6, this.formData.numberLat);
+        this.formCheck.typePassport = this.checkRu(this.formData.typePassport);
       }
       if(this.formData.changeId == 1) {
         this.formCheck.originLastName = this.checkRu(this.formData.originLastName);
         this.formCheck.originFirstName = this.checkRu(this.formData.originFirstName);
+      }
+      if(!this.formData.citizenship.length) {
+        this.formCheck.citizenship = false;
+      } else {
+        this.formCheck.citizenship = true;
       }
     },
     checkRu(str) {
@@ -288,17 +300,13 @@ export default {
 			return re.test(String(str).toLowerCase());
     },
     hideDropdown() {
-      console.log("steep: 5");
       this.isDropdownOpenContry = false;
       // this.isDropdownOpenExpiration = false;
-      console.log("steep: 6");
     },
     onCountryClicked(num, selectedCountry) {
-      console.log("steep: 1");
       this.searchWord = selectedCountry;
-      console.log("steep: 2");
+      this.formData.citizenship = this.searchWord;
       this.hideDropdown();
-      console.log("steep: 3");
       // if(num == 1) {
       // } else if(num == 2) {
       //   console.log("steep: 3");
@@ -308,7 +316,6 @@ export default {
     formSubmit() {
       this.check();
       for(let k in this.formCheck) {
-        console.log(k, this.formCheck[k]);
         if(this.formCheck[k] == false) {
           console.warn("the form cannot be sent to server");
           return;
@@ -342,6 +349,10 @@ export default {
 }
 .row {
   display: flex;
+}
+.column {
+  display: flex;
+  flex-direction: column;
 }
 .input-text {
   padding: 5px 15px;
