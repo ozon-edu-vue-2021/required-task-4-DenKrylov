@@ -73,10 +73,10 @@
           </div>
         </label>
       </div>
-      город{{ formData.citizenship }}
+      город{{ formData.citizenship == 'Russia'}}
       <div
         class="row"
-        v-if="formData.citizenship == 'russia'"
+        v-if="formData.citizenship == 'Russia'"
       >
         <label  v-bind:class="{ error: !formCheck.series }">
           Серия паспорта
@@ -240,7 +240,7 @@ export default {
       this.formCheck.patronymic = this.checkRu(this.formData.patronymic);
       this.formCheck.dateOfBirth = this.checkDate(this.formData.dateOfBirth);
       this.formCheck.email = this.checkEmail(this.formData.email);
-      if(this.formData.citizenship == "russia") {
+      if(this.formData.citizenship == "Russia") {
         this.formCheck.series = this.checkNum(4, this.formData.series);
         this.formCheck.number = this.checkNum(6, this.formData.number);
         this.formCheck.dateOfIssue = this.checkDate(this.formData.dateOfIssue);
