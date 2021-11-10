@@ -46,7 +46,7 @@
       <div class="row"
         v-click-outside="hideDropdown"
       >
-        <label>
+        <label v-bind:class="{ error: !formCheck.citizenship }">
           Гражданство
           <input 
             class="input-text" type="text"
@@ -73,10 +73,10 @@
           </div>
         </label>
       </div>
-      город{{ formData.citizenship == 'Russia'}}
       <div
         class="row"
-        v-if="formData.citizenship == 'Russia'"
+        v-if="formData.citizenship == 'Russia' ||
+          formData.citizenship == 'russia'"
       >
         <label  v-bind:class="{ error: !formCheck.series }">
           Серия паспорта
@@ -118,23 +118,6 @@
             @focus="isDropdownOpenExpiration = true"
             @keydown.enter="hideDropdown(2)"
           />
-          <div
-            v-if="isDropdownOpenExpiration"
-          >
-            <ul 
-              class="list-country"
-              v-if="allCitizens.length"
-            >
-              <li
-                v-for="country in allCitizens"
-                :key="country.id"
-                @click="onCountryClicked(2, country.nationality)"
-              >
-                {{ country.nationality }}
-              </li>
-            </ul>
-            <div v-else>Отсутсвует соединение с сервером</div>
-          </div>
           </label>
           <label v-bind:class="{ error: !formCheck.typePassport }">
             Тип паспорта
@@ -214,6 +197,7 @@ export default {
         email: true,
         series: true,
         number: true,
+        citizenship: true,
         lastNameLat: true,
         firstNameLat: true,
         numberLat: true,
@@ -240,7 +224,11 @@ export default {
       this.formCheck.patronymic = this.checkRu(this.formData.patronymic);
       this.formCheck.dateOfBirth = this.checkDate(this.formData.dateOfBirth);
       this.formCheck.email = this.checkEmail(this.formData.email);
-      if(this.formData.citizenship == "Russia") {
+      if(!this.formData.citizenship.length) {
+        this.formCheck.citizenship = false;
+      }
+      if(this.formData.citizenship == "russia" ||
+        this.formData.citizenship == "Russia") {
         this.formCheck.series = this.checkNum(4, this.formData.series);
         this.formCheck.number = this.checkNum(6, this.formData.number);
         this.formCheck.dateOfIssue = this.checkDate(this.formData.dateOfIssue);
@@ -325,6 +313,7 @@ export default {
     },
     getCitizens(searchWord) {
       this.filterCitizens = this.allCitizens.filter((citi) => {
+        this.formData.citizenship = searchWord;
         return citi.nationality.toLowerCase().includes(searchWord.toLowerCase());
       });
     },
