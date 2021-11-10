@@ -61,6 +61,9 @@
               class="list-country"
               v-if="allCitizens.length"
             >
+              <li v-if="!filterCitizens.length">
+                Список пуст
+              </li>
               <li
                 v-for="country in filterCitizens"
                 :key="country.id"
@@ -69,7 +72,7 @@
                 {{ country.nationality }}
               </li>
             </ul>
-              <div v-else>Список пуст</div>
+            <div v-else>Список пуст</div>
           </div>
         </label>
       </div>
@@ -93,8 +96,12 @@
       </div>
       <div
         class="column"
-        v-else-if="formData.citizenship !== 'russia' && formData.citizenship.length !== 0"
+        v-else-if="filterCitizens.length &&
+          filterCitizens[0].nationality != 'Russia' &&
+          formData.citizenship !== 'russia' &&
+          formData.citizenship.length !== 0"
       >
+        {{ filterCitizens[0].nationality}}
         <div class="row">
           <label v-bind:class="{ error: !formCheck.lastNameLat }">
             Фамилия на латинице
@@ -289,17 +296,11 @@ export default {
     },
     hideDropdown() {
       this.isDropdownOpenContry = false;
-      // this.isDropdownOpenExpiration = false;
     },
     onCountryClicked(num, selectedCountry) {
       this.searchWord = selectedCountry;
       this.formData.citizenship = this.searchWord;
       this.hideDropdown();
-      // if(num == 1) {
-      // } else if(num == 2) {
-      //   console.log("steep: 3");
-      //   this.formData.countryOfExpiration = selectedCountry;
-      // }
     },
     formSubmit() {
       this.check();
@@ -309,7 +310,7 @@ export default {
           return;
         }
       }
-      console.log("update", this.formData);
+      console.log(this.formData);
     },
     getCitizens(searchWord) {
       this.filterCitizens = this.allCitizens.filter((citi) => {
