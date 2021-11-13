@@ -6,28 +6,53 @@
       <h2>Личные данные</h2>
       <div class="row">
         <label v-bind:class="{ error: !formCheck.lastName }">
-          Фамилия
-          <input class="input-text" type="text" v-model="formData.lastName" />
+          <p class="">Фамилия</p>
+          <input class="input-text" type="text" v-model="formData.lastName" @focus="formCheck.lastName = true" />
+          <p class="text_error" v-if="!formCheck.lastName">В тексте должна быть только кирилца</p>
         </label>
         <label v-bind:class="{ error: !formCheck.firstName }" >
-          Имя
-          <input class="input-text" type="text" v-model="formData.firstName" />
+          <p>Имя</p>
+          <input 
+            class="input-text"
+            type="text"
+            v-model="formData.firstName"
+            @focus="formCheck.firstName = true"
+          />
+          <p class="text_error" v-if="!formCheck.firstName">В тексте должна быть только кирилца</p>
         </label>
         <label v-bind:class="{ error: !formCheck.patronymic }">
-          Отчество
-          <input class="input-text" type="text" v-model="formData.patronymic" />
+          <p>Отчество</p>
+          <input
+            class="input-text"
+            type="text"
+            v-model="formData.patronymic"
+            @focus="formCheck.patronymic = true"
+          />
+          <p class="text_error" v-if="!formCheck.patronymic">В тексте должна быть только кирилца</p>
         </label>
       </div>
       <div class="row">
         <label v-bind:class="{ error: !formCheck.dateOfBirth }">
-          Дата рождения
-          <input class="input-text" type="date" v-model="formData.dateOfBirth" />
+          <p>Дата рождения</p>
+          <input
+            class="input-text"
+            type="date"
+            v-model="formData.dateOfBirth"
+            @focus="formCheck.dateOfBirth = true"
+          />
+          <p class="text_error" v-if="!formCheck.dateOfBirth">Дата невалидная</p>
         </label>
       </div>
       <div class="row">
         <label v-bind:class="{ error: !formCheck.email }">
-          E-mail
-          <input class="input-text" type="email" v-model="formData.email" />
+          <p>E-mail</p>
+          <input
+            class="input-text"
+            type="email"
+            v-model="formData.email"
+            @focus="formCheck.email = true"
+          />
+          <p class="text_error" v-if="!formCheck.email">E-mail невалидный</p>
         </label>
       </div>
     </div>
@@ -51,9 +76,10 @@
           <input 
             class="input-text" type="text"
             v-model="searchWord"
-            @focus="isDropdownOpenContry = true"
+            @focus="isDropdownOpenContry = true, formCheck.citizenship = true"
             @keydown.enter="hideDropdown()"
           />
+          <p class="text_error" v-if="!formCheck.citizenship">Выберите страну</p>
           <div
             v-if="isDropdownOpenContry"
           >
@@ -78,47 +104,67 @@
       </div>
       <div
         class="row"
-        v-if="formData.citizenship == 'Russia' ||
-          formData.citizenship == 'russia'"
+        v-if="formData.citizenship === 'Russia' ||
+          formData.citizenship === 'russia'"
       >
         <label  v-bind:class="{ error: !formCheck.series }">
-          Серия паспорта
+          <p>Серия паспорта</p>
           <input class="input-text" type="text" v-model="formData.series" />
+          <p class="text_error" v-if="!formCheck.series">Серия должна содержать 4 цифры</p>
         </label>
         <label  v-bind:class="{ error: !formCheck.number }">
-          Номер паспота
+          <p>Номер паспота</p>
           <input class="input-text" type="text" v-model="formData.number" />
+          <p class="text_error" v-if="!formCheck.number">Номер должен содержать 6 цифр</p>
         </label>
         <label v-bind:class="{ error: !formCheck.dateOfIssue }">
-          Дата выдачи
+          <p>Дата выдачи</p>
           <input class="input-text" type="date" v-model="formData.dateOfIssue" />
+          <p class="text_error" v-if="!formCheck.dateOfIssue">Дата не валидна</p>
         </label>
       </div>
       <div
         class="column"
         v-else-if="filterCitizens.length &&
-          filterCitizens[0].nationality != 'Russia' &&
+          filterCitizens[0].nationality !== 'Russia' &&
           formData.citizenship !== 'russia' &&
           formData.citizenship.length !== 0"
       >
-        {{ filterCitizens[0].nationality}}
         <div class="row">
           <label v-bind:class="{ error: !formCheck.lastNameLat }">
-            Фамилия на латинице
-            <input class="input-text" type="text" v-model="formData.lastNameLat" />
+            <p>Фамилия на латинице</p>
+            <input
+              class="input-text"
+              type="text"
+              v-model="formData.lastNameLat"
+              @focus="formCheck.lastNameLat = true"
+            />
+            <p class="text_error" v-if="!formCheck.lastNameLat">В тексте должна быть только латиница</p>
           </label>
           <label  v-bind:class="{ error: !formCheck.firstNameLat }">
-            Имя на латинице
-            <input class="input-text" type="text" v-model="formData.firstNameLat" />
+            <p>Имя на латинице</p>
+            <input
+              class="input-text"
+              type="text"
+              v-model="formData.firstNameLat"
+              @focus="formCheck.firstNameLat = true"
+            />
+            <p class="text_error" v-if="!formCheck.firstNameLat">В тексте должна быть только латиница</p>
           </label>
         </div>
         <div class="row">
           <label v-bind:class="{ error: !formCheck.numberLat }">
-            Номер паспота
-            <input class="input-text" type="text" v-model="formData.numberLat" />
+            <p>Номер паспота</p>
+            <input
+              class="input-text"
+              type="text"
+              v-model="formData.numberLat"
+              @focus="formCheck.numberLat = true"
+            />
+            <p class="text_error" v-if="!formCheck.numberLat">Номер должен содержать 6 цифр</p>
           </label>
           <label>
-            Страна выдачи
+            <p>Страна выдачи</p>
             <input 
             class="input-text" type="text"
             v-model="formData.countryOfExpiration"
@@ -127,8 +173,13 @@
           />
           </label>
           <label v-bind:class="{ error: !formCheck.typePassport }">
-            Тип паспорта
-            <input class="input-text" type="input" v-model="formData.typePassport" />
+            <p>Тип паспорта</p>
+            <input
+              class="input-text"
+              type="input"
+              v-model="formData.typePassport"
+              @focus="formCheck.typePassport = true"
+            />
           </label>
         </div>
       </div>
@@ -147,15 +198,27 @@
       </div>
       <div
         class="row"
-        v-if="formData.changeId == 1"
+        v-if="formData.changeId === '1'"
       >
         <label v-bind:class="{ error: !formCheck.originLastName }">
-          Предыдущая Фамилия
-          <input class="input-text" type="text" v-model="formData.originLastName" />
+          <p>Предыдущая Фамилия</p>
+          <input
+            class="input-text"
+            type="text"
+            v-model="formData.originLastName"
+            @focus="formCheck.originLastName = true"  
+          />
+          <p class="text_error" v-if="!formCheck.originLastName">В тексте должна быть только кирилца</p>
         </label>
         <label v-bind:class="{ error: !formCheck.originFirstName }">
-          Предыдущее Имя
-          <input class="input-text" type="text" v-model="formData.originFirstName" />
+          <p>Предыдущее Имя</p>
+          <input
+            class="input-text"
+            type="text"
+            v-model="formData.originFirstName"
+            @focus="formCheck.originFirstName = true"
+          />
+          <p class="text_error" v-if="!formCheck.originFirstName">В тексте должна быть только кирилца</p>
         </label>
       </div>
     </div>
@@ -234,8 +297,8 @@ export default {
       if(!this.formData.citizenship.length) {
         this.formCheck.citizenship = false;
       }
-      if(this.formData.citizenship == "russia" ||
-        this.formData.citizenship == "Russia") {
+      if(this.formData.citizenship === "russia" ||
+        this.formData.citizenship === "Russia") {
         this.formCheck.series = this.checkNum(4, this.formData.series);
         this.formCheck.number = this.checkNum(6, this.formData.number);
         this.formCheck.dateOfIssue = this.checkDate(this.formData.dateOfIssue);
@@ -245,7 +308,7 @@ export default {
         this.formCheck.numberLat = this.checkNum(6, this.formData.numberLat);
         this.formCheck.typePassport = this.checkRu(this.formData.typePassport);
       }
-      if(this.formData.changeId == 1) {
+      if(this.formData.changeId === '1') {
         this.formCheck.originLastName = this.checkRu(this.formData.originLastName);
         this.formCheck.originFirstName = this.checkRu(this.formData.originFirstName);
       }
@@ -268,7 +331,7 @@ export default {
       return true;
     },
     checkNum(num, str) {
-      if(num == str.length) {
+      if(num === str.length) {
         let re = /^\d+$/;
         return re.test(Number(str));
       }
@@ -305,7 +368,7 @@ export default {
     formSubmit() {
       this.check();
       for(let k in this.formCheck) {
-        if(this.formCheck[k] == false) {
+        if(this.formCheck[k] === false) {
           console.warn("the form cannot be sent to server");
           return;
         }
@@ -355,11 +418,11 @@ export default {
   outline:none;
 }
 .error {
-  color: rgb(170, 2, 30);
+  color: rgb(99, 2, 18);
 }
 .error .input-text {
-  border: 1px solid rgb(170, 2, 30);
-  color: rgb(170, 2, 30);
+  border: 1px solid rgb(99, 2, 18);
+  color: rgb(99, 2, 18);
 }
 h2 {
   margin: 10px;
@@ -401,5 +464,9 @@ label .input-text{
 }
 .row-button {
   justify-content: center;
+}
+.text_error {
+  margin: 3px 0 0 0;
+  font-size: 12px;
 }
 </style>
